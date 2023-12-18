@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="script.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PostAdress-WebComponent</title>
+</head>
+
+<body>
+    <div>
+
+        <div>
+            <span>Adresse</span>
+            <div>
+                <div class="input-div">
+                    <span>PLZ</span>
+                    <input class="zip-code-input" id="zip-code-input" onfocusout="autoFillCity()"
+                        onkeyup="autoCompleteZipCode()" onkeydown="preventArrowKeyDefault(event)" type="number"
+                        placeholder="Postleitzahl">
+                    <table id="zip-code-suggestions">
+
+                    </table>
+                </div>
+                <div class="input-div">
+                    <span>Stadt</span>
+                    <input id="city-input" placeholder="Stadt">
+                </div>
+            </div>
+
+            <div>
+                <div class="input-div">
+                    <span>Straße</span>
+                    <input placeholder="Straße">
+                </div>
+                <div class="input-div">
+                    <span>Hausnummer</span>
+                    <input placeholder="Hausnummer">
+                </div>
+            </div>
+
+            <div class="input-div">
+                <span>Land</span>
+                <input placeholder="Land">
+            </div>
+            <button onclick="getPostAdress()">Send</button>
+        </div>
+</body>
+
+</html>

@@ -1,0 +1,14 @@
+.input-div {
+    position: relative;
+}
+
+.zip-code-input::-webkit-outer-spin-button,
+.zip-code-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.zip-code-input[type=number] {
+    -moz-appearance: textfield;
+    appearance: input;
+}
