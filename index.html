@@ -17,23 +17,31 @@
             <div>
                 <div class="input-div">
                     <span>PLZ</span>
-                    <input class="zip-code-input" id="zip-code-input" onfocusout="autoFillCity()"
-                        onkeyup="autoCompleteZipCode()" onkeydown="preventArrowKeyDefault(event)" type="number"
-                        placeholder="Postleitzahl">
-                    <table id="zip-code-suggestions">
+                    <input class="zip-code-input" id="zip-code-input"
+                        onfocusout="autoFillCity();clearTable('zip-code-suggestions');" onkeyup="autoCompleteZipCode()"
+                        onkeydown="preventArrowKeyDefault(event)" type="number" placeholder="Postleitzahl">
+                    <table>
+                        <tbody id="zip-code-suggestions">
 
+                        </tbody>
                     </table>
                 </div>
                 <div class="input-div">
                     <span>Stadt</span>
-                    <input id="city-input" placeholder="Stadt">
+                    <input id="city-input" onkeyup="autoCompleteCity()" placeholder="Stadt"
+                        onfocusout="clearTable('city-suggestions')">
+                    <table>
+                        <tbody id="city-suggestions">
+
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
             <div>
                 <div class="input-div">
                     <span>Straße</span>
-                    <input placeholder="Straße">
+                    <input id="street-input" onkeyup="autoCompleteStreet()" placeholder="Straße">
                 </div>
                 <div class="input-div">
                     <span>Hausnummer</span>

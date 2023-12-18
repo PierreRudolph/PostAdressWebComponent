@@ -12,3 +12,11 @@
     -moz-appearance: textfield;
     appearance: input;
 }
+
+.suggestion-td {
+    cursor: pointer;
+}
+
+.suggestion-td:hover {
+    background-color: lightgrey;
+}

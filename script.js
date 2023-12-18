@@ -14,14 +14,30 @@ let findaCity = {
     lang: 'de_DE'
 }
 
+
+
 let zipSuggArray = [];
+let citySuggArray = [];
+class City {
+    city;
+    plz;
+    constructor(city, plz) {
+        city ? this.city = city : '';
+        plz ? this.plz = plz : '';
+    }
+}
+
+let actualCity;
 
 async function getPostAdress(data) {
     let preparedData = prepareJSON(data);
     try {
-        let response = await fetch("https://www.postdirekt.de/plzserver/PlzAjaxServlet", {
+        noCorsUrl = 'https://cors-anywhere.herokuapp.com/https://www.postdirekt.de/plzserver/PlzAjaxServlet';
+        normalUrl = 'https://www.postdirekt.de/plzserver/PlzAjaxServlet'
+        let response = await fetch(noCorsUrl, {
             method: 'POST',
             cache: 'no-cache',
+
             headers: {
                 'accept': 'application/json',
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
@@ -53,8 +69,11 @@ async function autoCompleteZipCode() {
     let zipSuggDiv = getHTMLElement('zip-code-suggestions')
     findaCity.city = zipCodeInput.value;
     let response = await getPostAdress(findaCity);
+
     if (response.rows) {
         console.log(response.rows[0])
+        actualCity = response.rows[0];
+
         zipSuggDiv.innerHTML = '';
         zipSuggArray = [];
         for (let i = 0; i < 5; i++) {
@@ -62,29 +81,91 @@ async function autoCompleteZipCode() {
             if (!zipSuggArray.includes(foundCity.plz)) {
                 zipSuggArray.push(foundCity.plz)
             }
-
         }
         zipSuggArray.forEach(zipCode => {
-            zipSuggDiv.innerHTML += /*html*/`<tr>${zipCode}</tr>`;
+            zipSuggDiv.innerHTML += /*html*/`<td class="suggestion-td" onclick="setInputValue(${zipCode},'zip-code-input')">${zipCode}</td>`;
         });
     }
+    if (zipCodeInput.value.length == 0) {
+        zipSuggArray = [];
+        zipSuggDiv.innerHTML = '';
+    }
+}
+async function autoCompleteCity() {
+    let cityInput = getHTMLElement('city-input');
+    let citySuggTable = getHTMLElement('city-suggestions');
+    findaZipCode.plz_city = cityInput.value;
+    let response = await getPostAdress(findaZipCode);
+    console.log(response)
+    if (response.rows) {
+        console.log(response.rows[0])
+        actualCity = response.rows[0];
+
+        citySuggTable.innerHTML = '';
+        citySuggArray = [];
+        for (let i = 0; i < 5; i++) {
+            const foundCity = response.rows[i];
+            console.log(citySuggArray, 'gefundeneStadt=', foundCity)
+            if (!citySuggArray.includes(foundCity.city)) {
+                console.log(foundCity.city)
+                citySuggArray.push(foundCity.city)
+            }
+        }
+        citySuggArray.forEach(city => {
+            cityToString = "'" + city + "'";
+            citySuggTable.innerHTML += /*html*/`<td class="suggestion-td" onclick="setInputValue(${cityToString},'city-input')">${city}</td>`;
+        });
+    }
+    if (cityInput.value.length == 0) {
+        citySuggArray = [];
+        citySuggTable.innerHTML = '';
+    }
+}
+async function autoCompleteStreet() {
+    let streetInput = getHTMLElement('street-input');
+    findaCity.plz_street = streetInput.value;
+
+    let response = getPostAdress(findaCity);
+    console.log(response)
 }
 
+function setInputValue(value, id) {
+    let input = getHTMLElement(id);
+    input.focus({ focusVisible: true });
+    input.value = value;
+}
 
-async function autoFillCity() {
-    let cityInput = getHTMLElement('city-input')
+function autoFillCity() {
+    let cityInput = getHTMLElement('city-input');
     let zipCode = getHTMLElement('zip-code-input');
-    console.log(zipCode.value.length)
-    if (zipCode.value.length == 5) {
-        findaCity.city = zipCode.value;
-        let response = await getPostAdress(findaCity);
-        let foundCity = response.rows[0].city;
-        cityInput.value = foundCity;
+    console.log(zipCode.value.length, findaCity.city, actualCity)
+    if (actualCity) {
+        cityInput.value = actualCity.city;
+        console.log(zipCode.value.length)
+    }
+    if (zipCode.value.length == 0) {
+        console.log('call clear input', zipCode.value.length)
+        cityInput.value = '';
     }
 }
 
-async function autoCompleteCity() {
-    let cityInput = getHTMLElement('city-input');
+// function autoFillZipCode() {
+//     let cityInput = getHTMLElement('city-input')
+//     let zipCode = getHTMLElement('zip-code-input');
+//     if (actualCity) {
+//         zipCode.value = actualCity.plz;
+//         console.log(cityInput.value.length)
+//     }
+//     if (cityInput.value.length == 0) {
+//         zipCode.value = '';
+//     }
+// }
+
+function clearTable(tableId) {
+    let suggTable = getHTMLElement(tableId);
+    setTimeout(() => {
+        suggTable.innerHTML = '';
+    }, 200);
 }
 
 function getHTMLElement(id) {
