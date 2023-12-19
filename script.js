@@ -74,6 +74,7 @@ async function autoCompleteZipCode() {
                 zipSuggArray.push(foundCity.plz)
             }
         }
+        removeDNone('zip-code-table');
         zipSuggArray.forEach(zipCode => {
             zipSuggDiv.innerHTML += /*html*/`<td class="suggestion-td" onclick="setInputValue(${zipCode},'zip-code-input')">${zipCode}</td>`;
         });
@@ -81,6 +82,7 @@ async function autoCompleteZipCode() {
     if (zipCodeInput.value.length == 0) {
         zipSuggArray = [];
         zipSuggDiv.innerHTML = '';
+        addDNone('zip-code-table');
     }
 }
 async function autoCompleteCity() {
@@ -105,6 +107,7 @@ async function autoCompleteCity() {
                 citySuggArray.push(foundCity.city)
             }
         }
+        removeDNone('city-table');
         citySuggArray.forEach(city => {
             cityToString = "'" + city + "'";
             citySuggTable.innerHTML += /*html*/`<td class="suggestion-td" onclick="setInputValue(${cityToString},'city-input')">${city}</td>`;
@@ -113,6 +116,7 @@ async function autoCompleteCity() {
     if (cityInput.value.length == 0) {
         citySuggArray = [];
         citySuggTable.innerHTML = '';
+        addDNone('city-table');
     }
 }
 
@@ -145,6 +149,7 @@ async function autoCompleteStreet() {
                 streetSuggArray.push(foundCity.street)
             }
         }
+        removeDNone('street-table');
         streetSuggArray.forEach(city => {
             streetToString = "'" + city + "'";
             streetSuggTable.innerHTML += /*html*/`<td class="suggestion-td" onclick="setInputValue(${streetToString},'street-input')">${city}</td>`;
@@ -153,6 +158,7 @@ async function autoCompleteStreet() {
     if (streetInput.value.length == 0) {
         streetSuggArray = [];
         streetSuggTable.innerHTML = '';
+        addDNone('street-table');
     }
 }
 
@@ -188,10 +194,11 @@ function autoFillCity() {
 //     }
 // }
 
-function clearTable(tableId) {
-    let suggTable = getHTMLElement(tableId);
+function clearTable(tableBodyId, tableId) {
+    let tableBody = getHTMLElement(tableBodyId);
     setTimeout(() => {
-        suggTable.innerHTML = '';
+        addDNone(tableId);
+        tableBody.innerHTML = '';
     }, 200);
 }
 
@@ -200,8 +207,18 @@ function getHTMLElement(id) {
     return inputEl;
 }
 
+function addDNone(id) {
+    let HTMLElement = getHTMLElement(id);
+    HTMLElement.classList.add('d-none');
+}
+
+function removeDNone(id) {
+    let HTMLElement = getHTMLElement(id);
+    HTMLElement.classList.remove('d-none');
+}
+
 function preventArrowKeyDefault(e) {
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         e.preventDefault();
     }
-};
+}

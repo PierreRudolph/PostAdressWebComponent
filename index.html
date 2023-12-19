@@ -10,27 +10,28 @@
 </head>
 
 <body>
-    <div>
+    <div class="d-flex justify-center">
 
-        <div>
+        <div class="adress-formular gap10 d-flex flex-column">
             <span>Adresse</span>
-            <div>
-                <div class="input-div">
+            <div class="d-flex gap60">
+                <div class="input-div d-flex">
                     <span>PLZ</span>
                     <input class="zip-code-input" id="zip-code-input"
-                        onfocusout="autoFillCity();clearTable('zip-code-suggestions');" onkeyup="autoCompleteZipCode()"
-                        onkeydown="preventArrowKeyDefault(event)" type="number" placeholder="Postleitzahl">
-                    <table>
+                        onfocusout="autoFillCity();clearTable('zip-code-suggestions','zip-code-table');"
+                        onkeyup="autoCompleteZipCode()" onkeydown="preventArrowKeyDefault(event)" type="number"
+                        placeholder="Postleitzahl">
+                    <table id="zip-code-table" class="tables d-none">
                         <tbody id="zip-code-suggestions">
 
                         </tbody>
                     </table>
                 </div>
-                <div class="input-div">
+                <div class="input-div d-flex width-100-per">
                     <span>Stadt</span>
-                    <input id="city-input" onkeyup="autoCompleteCity()" placeholder="Stadt"
-                        onfocusout="clearTable('city-suggestions')">
-                    <table>
+                    <input class="width-100-per" id="city-input" onkeyup="autoCompleteCity()" placeholder="Stadt"
+                        onfocusout="clearTable('city-suggestions','city-table')">
+                    <table id="city-table" class="tables d-none">
                         <tbody id="city-suggestions">
 
                         </tbody>
@@ -38,26 +39,26 @@
                 </div>
             </div>
 
-            <div>
-                <div class="input-div">
+            <div class="d-flex gap60">
+                <div class="input-div d-flex width-100-per">
                     <span>Straße</span>
-                    <input id="street-input" onkeyup="autoCompleteStreet()"
-                        onfocusout="clearTable('street-suggestions')" placeholder="Straße">
-                    <table>
+                    <input class="width-100-per" id="street-input" onkeyup="autoCompleteStreet()"
+                        onfocusout="clearTable('street-suggestions','street-table')" placeholder="Straße">
+                    <table id="street-table" class="tables d-none">
                         <tbody id="street-suggestions">
 
                         </tbody>
                     </table>
                 </div>
-                <div class="input-div">
+                <div class="input-div  d-flex">
                     <span>Hausnummer</span>
                     <input placeholder="Hausnummer">
                 </div>
             </div>
 
-            <div class="input-div">
+            <div class="input-div d-flex d-flex">
                 <span>Land</span>
-                <input placeholder="Land">
+                <input class="width-100-per" placeholder="Land">
             </div>
             <button onclick="getPostAdress()">Send</button>
         </div>

@@ -1,5 +1,45 @@
+.adress-formular {
+    width: 60vw;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
 .input-div {
     position: relative;
+    gap: 10px;
+}
+
+.width-100-per {
+    width: 100%;
+}
+
+.gap10 {
+    gap: 10px;
+}
+
+.gap60 {
+    gap: 60px;
+}
+
+.tables {
+    position: absolute;
+    background-color: white;
+    z-index: 1;
+    top: 21px;
+    left: 37px;
+    padding: 8px 8px;
+    box-shadow: 1px 1px 5px 1px #d3d3d38c;
+    border-radius: 3px
 }
 
 .zip-code-input::-webkit-outer-spin-button,
@@ -19,4 +59,8 @@
 
 .suggestion-td:hover {
     background-color: lightgrey;
+}
+
+.d-none {
+    display: none !important;
 }
