@@ -41,7 +41,13 @@
             <div>
                 <div class="input-div">
                     <span>Straße</span>
-                    <input id="street-input" onkeyup="autoCompleteStreet()" placeholder="Straße">
+                    <input id="street-input" onkeyup="autoCompleteStreet()"
+                        onfocusout="clearTable('street-suggestions')" placeholder="Straße">
+                    <table>
+                        <tbody id="street-suggestions">
+
+                        </tbody>
+                    </table>
                 </div>
                 <div class="input-div">
                     <span>Hausnummer</span>

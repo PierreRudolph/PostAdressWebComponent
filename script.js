@@ -14,19 +14,9 @@ let findaCity = {
     lang: 'de_DE'
 }
 
-
-
 let zipSuggArray = [];
 let citySuggArray = [];
-class City {
-    city;
-    plz;
-    constructor(city, plz) {
-        city ? this.city = city : '';
-        plz ? this.plz = plz : '';
-    }
-}
-
+let streetSuggArray = [];
 let actualCity;
 
 async function getPostAdress(data) {
@@ -34,7 +24,7 @@ async function getPostAdress(data) {
     try {
         noCorsUrl = 'https://cors-anywhere.herokuapp.com/https://www.postdirekt.de/plzserver/PlzAjaxServlet';
         normalUrl = 'https://www.postdirekt.de/plzserver/PlzAjaxServlet'
-        let response = await fetch(noCorsUrl, {
+        let response = await fetch(normalUrl, {
             method: 'POST',
             cache: 'no-cache',
 
@@ -73,10 +63,12 @@ async function autoCompleteZipCode() {
     if (response.rows) {
         console.log(response.rows[0])
         actualCity = response.rows[0];
-
+        if (response.rows.length > 5) {
+            response.rows.length = 5;
+        }
         zipSuggDiv.innerHTML = '';
         zipSuggArray = [];
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < response.rows.length; i++) {
             const foundCity = response.rows[i];
             if (!zipSuggArray.includes(foundCity.plz)) {
                 zipSuggArray.push(foundCity.plz)
@@ -100,10 +92,12 @@ async function autoCompleteCity() {
     if (response.rows) {
         console.log(response.rows[0])
         actualCity = response.rows[0];
-
+        if (response.rows.length > 5) {
+            response.rows.length = 5;
+        }
         citySuggTable.innerHTML = '';
         citySuggArray = [];
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < response.rows.length; i++) {
             const foundCity = response.rows[i];
             console.log(citySuggArray, 'gefundeneStadt=', foundCity)
             if (!citySuggArray.includes(foundCity.city)) {
@@ -121,12 +115,45 @@ async function autoCompleteCity() {
         citySuggTable.innerHTML = '';
     }
 }
+
 async function autoCompleteStreet() {
     let streetInput = getHTMLElement('street-input');
-    findaCity.plz_street = streetInput.value;
+    let streetSuggTable = getHTMLElement('street-suggestions');
+    findaZipCode.plz_city = actualCity.city;
+    findaZipCode.plz_plz = actualCity.plz;
+    findaZipCode.plz_street = streetInput.value;
 
-    let response = getPostAdress(findaCity);
-    console.log(response)
+    let response = await getPostAdress(findaZipCode);
+    console.log(response);
+
+    if (response.rows) {
+        console.log('response rows 0=', response.rows[0])
+        //actualCity = response.rows[0];
+        if (response.rows.length > 5) {
+            response.rows.length = 5;
+        }
+
+        console.log('response rows beschnitten =', response.rows)
+        streetSuggTable.innerHTML = '';
+        streetSuggArray = [];
+        for (let i = 0; i < response.rows.length; i++) {
+            const foundCity = response.rows[i];
+            console.log('response.rows', i, '=', response.rows[i])
+            console.log(citySuggArray, 'gefundeneStadt=', foundCity)
+            if (!streetSuggArray.includes(foundCity.street)) {
+                console.log(foundCity.street)
+                streetSuggArray.push(foundCity.street)
+            }
+        }
+        streetSuggArray.forEach(city => {
+            streetToString = "'" + city + "'";
+            streetSuggTable.innerHTML += /*html*/`<td class="suggestion-td" onclick="setInputValue(${streetToString},'street-input')">${city}</td>`;
+        });
+    }
+    if (streetInput.value.length == 0) {
+        streetSuggArray = [];
+        streetSuggTable.innerHTML = '';
+    }
 }
 
 function setInputValue(value, id) {
