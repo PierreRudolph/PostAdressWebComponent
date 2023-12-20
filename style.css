@@ -1,3 +1,9 @@
+body {
+    margin: 0px;
+    font-family: 'Open Sans', 'Helvetica', sans-serif;
+    font-size: 14px;
+}
+
 .adress-formular {
     width: 60vw;
 }
@@ -16,30 +22,71 @@
 
 .input-div {
     position: relative;
-    gap: 10px;
+    gap: 20px;
+}
+
+.input-div input {
+    border: 1px solid grey;
+    border-radius: 4px;
+    outline: none;
+    height: 24px;
+    padding-left: 10px;
 }
 
 .width-100-per {
     width: 100%;
 }
 
-.gap10 {
+.gap-10 {
     gap: 10px;
 }
 
-.gap60 {
+.gap-60 {
     gap: 60px;
+}
+
+.pad-top50 {
+    padding-top: 50px;
+}
+
+.fs-15 {
+    font-size: 15px;
+}
+
+.fw-6 {
+    font-weight: 600;
+}
+
+.message-box {
+    padding: 8px 8px;
+    box-shadow: 1px 1px 5px 1px #d3d3d38c;
+    border-radius: 3px
 }
 
 .tables {
     position: absolute;
     background-color: white;
     z-index: 1;
-    top: 21px;
-    left: 37px;
+    top: 28px;
+    left: 75px;
     padding: 8px 8px;
     box-shadow: 1px 1px 5px 1px #d3d3d38c;
     border-radius: 3px
+}
+
+.suggestion-td {
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+.suggestion-td:hover {
+    background-color: lightgrey;
+}
+
+.button {
+    width: 50px;
+    margin-left: 72px;
 }
 
 .number-input::-webkit-outer-spin-button,
@@ -51,14 +98,6 @@
 .number-input[type=number] {
     -moz-appearance: textfield;
     appearance: input;
-}
-
-.suggestion-td {
-    cursor: pointer;
-}
-
-.suggestion-td:hover {
-    background-color: lightgrey;
 }
 
 .d-none {

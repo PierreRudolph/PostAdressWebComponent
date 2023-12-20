@@ -61,6 +61,7 @@ function prepareJSON(data) {
     return preparedData;
 }
 
+
 async function autoCompleteZipCode() {
     let zipCodeInput = getHTMLElement('zip-code-input');
     let zipSuggDiv = getHTMLElement('zip-code-suggestions')
@@ -93,6 +94,8 @@ async function autoCompleteZipCode() {
         addDNone('zip-code-table');
     }
 }
+
+
 async function autoCompleteCity() {
     let cityInput = getHTMLElement('city-input');
     let citySuggTable = getHTMLElement('city-suggestions');
@@ -125,6 +128,7 @@ async function autoCompleteCity() {
     }
 }
 
+
 async function autoCompleteStreet() {
     let streetInput = getHTMLElement('street-input');
     let streetSuggTable = getHTMLElement('street-suggestions');
@@ -152,7 +156,7 @@ async function autoCompleteStreet() {
         removeDNone('street-table');
         streetSuggArray.forEach(city => {
             streetToString = "'" + city + "'";
-            streetSuggTable.innerHTML += /*html*/`<td class="suggestion-td" onclick="setInputValue(${streetToString},'street-input')">${city}</td>`;
+            streetSuggTable.innerHTML += /*html*/`<td class="suggestions-td" onclick="setInputValue(${streetToString},'street-input')">${city}</td>`;
         });
     }
     if (streetInput.value.length == 0) {
@@ -162,6 +166,7 @@ async function autoCompleteStreet() {
     }
 }
 
+
 function setInputValue(value, id) {
     let input = getHTMLElement(id);
     input.focus({ focusVisible: true });
@@ -169,11 +174,13 @@ function setInputValue(value, id) {
     inputsIntoCityJSON();
 }
 
+
 function foundCityIntoCityJSON(foundCity) {
     cityJSON.city = foundCity.city;
     cityJSON.plz = foundCity.plz;
     cityJSON.street = foundCity.street;
 }
+
 
 function inputsIntoCityJSON() {
     let cityInput = getHTMLElement('city-input');
@@ -187,36 +194,40 @@ function inputsIntoCityJSON() {
 
 }
 
+
+function autoFillCity() {
+    let cityInput = getHTMLElement('city-input');
+    let zipCode = getHTMLElement('zip-code-input');
+    if (cityJSON.city) {
+        cityInput.value = cityJSON.city;
+    }
+    if (zipCode.value.length == 0) {
+        cityInput.value = '';
+    }
+}
+
+
 /**
  * Funktioniert nicht weil große Städte mehr als eine Postleitzahl haben.
  */
-// function autoFillCity() {
-//     let cityInput = getHTMLElement('city-input');
+// function autoFillZipCode() {
+//     let cityInput = getHTMLElement('city-input')
 //     let zipCode = getHTMLElement('zip-code-input');
-//     if (cityJSON.city) {
-//         cityInput.value = cityJSON.city;
+//     if (cityJSON.plz) {
+//         console.log(cityJSON.plz)
+//         zipCode.value = cityJSON.plz;
 //     }
-//     if (zipCode.value.length == 0) {
-//         cityInput.value = '';
+//     if (cityInput.value.length == 0) {
+//         zipCode.value = '';
 //     }
 // }
 
-function autoFillZipCode() {
-    let cityInput = getHTMLElement('city-input')
-    let zipCode = getHTMLElement('zip-code-input');
-    if (cityJSON.plz) {
-        console.log(cityJSON.plz)
-        zipCode.value = cityJSON.plz;
-    }
-    if (cityInput.value.length == 0) {
-        zipCode.value = '';
-    }
-}
 
 function prefillLand() {
     let landInput = getHTMLElement('land-input');
     landInput.value = 'Deutschland';
 }
+
 
 function clearTable(tableBodyId, tableId) {
     let tableBody = getHTMLElement(tableBodyId);
@@ -226,10 +237,17 @@ function clearTable(tableBodyId, tableId) {
     }, 200);
 }
 
+
 function showMessageBox() {
     let mesBox = getHTMLElement('message-box');
     let jsonToText = JSON.stringify(cityJSON)
-    mesBox.innerHTML = jsonToText;
+    mesBox.innerHTML = /*html*/`{
+    <tr><td>city:</td><td>${cityJSON.city}</td></tr>
+    <tr><td>plz:</td><td>${cityJSON.plz}</td></tr>
+    <tr><td>street:</td><td>${cityJSON.street}</td></tr>
+    <tr><td>number:</td><td>${cityJSON.number}</td></tr>
+    <tr><td>land:</td><td>${cityJSON.land}</td></tr>
+}`;
 }
 
 
@@ -238,15 +256,18 @@ function getHTMLElement(id) {
     return inputEl;
 }
 
+
 function addDNone(id) {
     let HTMLElement = getHTMLElement(id);
     HTMLElement.classList.add('d-none');
 }
 
+
 function removeDNone(id) {
     let HTMLElement = getHTMLElement(id);
     HTMLElement.classList.remove('d-none');
 }
+
 
 function preventArrowKeyDefault(e) {
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
