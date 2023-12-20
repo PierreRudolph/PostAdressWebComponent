@@ -10,8 +10,8 @@
     flex-direction: column;
 }
 
-.justify-center {
-    justify-content: center;
+.align-center {
+    align-items: center;
 }
 
 .input-div {
@@ -42,13 +42,13 @@
     border-radius: 3px
 }
 
-.zip-code-input::-webkit-outer-spin-button,
-.zip-code-input::-webkit-inner-spin-button {
+.number-input::-webkit-outer-spin-button,
+.number-input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
 
-.zip-code-input[type=number] {
+.number-input[type=number] {
     -moz-appearance: textfield;
     appearance: input;
 }

@@ -18,6 +18,14 @@ let zipSuggArray = [];
 let citySuggArray = [];
 let streetSuggArray = [];
 let actualCity;
+let cityJSON = {
+    city: '',
+    plz: '',
+    street: '',
+    number: '',
+    land: 'de'
+}
+
 
 async function getPostAdress(data) {
     let preparedData = prepareJSON(data);
@@ -35,7 +43,6 @@ async function getPostAdress(data) {
             body: preparedData,
 
         })
-        console.log(response);
         return response = await response.json();
 
     } catch (error) {
@@ -61,8 +68,8 @@ async function autoCompleteZipCode() {
     let response = await getPostAdress(findaCity);
 
     if (response.rows) {
-        console.log(response.rows[0])
-        actualCity = response.rows[0];
+        console.log(response.rows[0]);
+        foundCityIntoCityJSON(response.rows[0]);
         if (response.rows.length > 5) {
             response.rows.length = 5;
         }
@@ -79,6 +86,7 @@ async function autoCompleteZipCode() {
             zipSuggDiv.innerHTML += /*html*/`<td class="suggestion-td" onclick="setInputValue(${zipCode},'zip-code-input')">${zipCode}</td>`;
         });
     }
+
     if (zipCodeInput.value.length == 0) {
         zipSuggArray = [];
         zipSuggDiv.innerHTML = '';
@@ -90,10 +98,9 @@ async function autoCompleteCity() {
     let citySuggTable = getHTMLElement('city-suggestions');
     findaZipCode.plz_city = cityInput.value;
     let response = await getPostAdress(findaZipCode);
-    console.log(response)
     if (response.rows) {
+        foundCityIntoCityJSON(response.rows[0])
         console.log(response.rows[0])
-        actualCity = response.rows[0];
         if (response.rows.length > 5) {
             response.rows.length = 5;
         }
@@ -101,9 +108,7 @@ async function autoCompleteCity() {
         citySuggArray = [];
         for (let i = 0; i < response.rows.length; i++) {
             const foundCity = response.rows[i];
-            console.log(citySuggArray, 'gefundeneStadt=', foundCity)
             if (!citySuggArray.includes(foundCity.city)) {
-                console.log(foundCity.city)
                 citySuggArray.push(foundCity.city)
             }
         }
@@ -123,29 +128,24 @@ async function autoCompleteCity() {
 async function autoCompleteStreet() {
     let streetInput = getHTMLElement('street-input');
     let streetSuggTable = getHTMLElement('street-suggestions');
-    findaZipCode.plz_city = actualCity.city;
-    findaZipCode.plz_plz = actualCity.plz;
+    findaZipCode.plz_city = cityJSON.city;
+    findaZipCode.plz_plz = cityJSON.plz;
     findaZipCode.plz_street = streetInput.value;
 
     let response = await getPostAdress(findaZipCode);
-    console.log(response);
 
     if (response.rows) {
-        console.log('response rows 0=', response.rows[0])
-        //actualCity = response.rows[0];
+        foundCityIntoCityJSON(response.rows[0])
         if (response.rows.length > 5) {
             response.rows.length = 5;
         }
-
-        console.log('response rows beschnitten =', response.rows)
         streetSuggTable.innerHTML = '';
         streetSuggArray = [];
         for (let i = 0; i < response.rows.length; i++) {
             const foundCity = response.rows[i];
-            console.log('response.rows', i, '=', response.rows[i])
-            console.log(citySuggArray, 'gefundeneStadt=', foundCity)
+
             if (!streetSuggArray.includes(foundCity.street)) {
-                console.log(foundCity.street)
+
                 streetSuggArray.push(foundCity.street)
             }
         }
@@ -166,33 +166,57 @@ function setInputValue(value, id) {
     let input = getHTMLElement(id);
     input.focus({ focusVisible: true });
     input.value = value;
+    inputsIntoCityJSON();
 }
 
-function autoFillCity() {
+function foundCityIntoCityJSON(foundCity) {
+    cityJSON.city = foundCity.city;
+    cityJSON.plz = foundCity.plz;
+    cityJSON.street = foundCity.street;
+}
+
+function inputsIntoCityJSON() {
     let cityInput = getHTMLElement('city-input');
     let zipCode = getHTMLElement('zip-code-input');
-    console.log(zipCode.value.length, findaCity.city, actualCity)
-    if (actualCity) {
-        cityInput.value = actualCity.city;
-        console.log(zipCode.value.length)
+    let streetInput = getHTMLElement('street-input');
+    let numberInput = getHTMLElement('number-input');
+    cityJSON.city = cityInput.value;
+    cityJSON.plz = zipCode.value;
+    cityJSON.street = streetInput.value;
+    cityJSON.number = numberInput.value;
+
+}
+
+/**
+ * Funktioniert nicht weil große Städte mehr als eine Postleitzahl haben.
+ */
+// function autoFillCity() {
+//     let cityInput = getHTMLElement('city-input');
+//     let zipCode = getHTMLElement('zip-code-input');
+//     if (cityJSON.city) {
+//         cityInput.value = cityJSON.city;
+//     }
+//     if (zipCode.value.length == 0) {
+//         cityInput.value = '';
+//     }
+// }
+
+function autoFillZipCode() {
+    let cityInput = getHTMLElement('city-input')
+    let zipCode = getHTMLElement('zip-code-input');
+    if (cityJSON.plz) {
+        console.log(cityJSON.plz)
+        zipCode.value = cityJSON.plz;
     }
-    if (zipCode.value.length == 0) {
-        console.log('call clear input', zipCode.value.length)
-        cityInput.value = '';
+    if (cityInput.value.length == 0) {
+        zipCode.value = '';
     }
 }
 
-// function autoFillZipCode() {
-//     let cityInput = getHTMLElement('city-input')
-//     let zipCode = getHTMLElement('zip-code-input');
-//     if (actualCity) {
-//         zipCode.value = actualCity.plz;
-//         console.log(cityInput.value.length)
-//     }
-//     if (cityInput.value.length == 0) {
-//         zipCode.value = '';
-//     }
-// }
+function prefillLand() {
+    let landInput = getHTMLElement('land-input');
+    landInput.value = 'Deutschland';
+}
 
 function clearTable(tableBodyId, tableId) {
     let tableBody = getHTMLElement(tableBodyId);
@@ -201,6 +225,13 @@ function clearTable(tableBodyId, tableId) {
         tableBody.innerHTML = '';
     }, 200);
 }
+
+function showMessageBox() {
+    let mesBox = getHTMLElement('message-box');
+    let jsonToText = JSON.stringify(cityJSON)
+    mesBox.innerHTML = jsonToText;
+}
+
 
 function getHTMLElement(id) {
     let inputEl = document.getElementById(`${id}`);

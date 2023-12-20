@@ -9,21 +9,19 @@
     <title>PostAdress-WebComponent</title>
 </head>
 
-<body>
-    <div class="d-flex justify-center">
-
+<body onload="prefillLand()">
+    <div class="d-flex flex-column align-center gap60">
         <div class="adress-formular gap10 d-flex flex-column">
             <span>Adresse</span>
             <div class="d-flex gap60">
                 <div class="input-div d-flex">
                     <span>PLZ</span>
-                    <input class="zip-code-input" id="zip-code-input"
+                    <input class="number-input" id="zip-code-input"
                         onfocusout="autoFillCity();clearTable('zip-code-suggestions','zip-code-table');"
                         onkeyup="autoCompleteZipCode()" onkeydown="preventArrowKeyDefault(event)" type="number"
                         placeholder="Postleitzahl">
                     <table id="zip-code-table" class="tables d-none">
                         <tbody id="zip-code-suggestions">
-
                         </tbody>
                     </table>
                 </div>
@@ -33,12 +31,10 @@
                         onfocusout="clearTable('city-suggestions','city-table')">
                     <table id="city-table" class="tables d-none">
                         <tbody id="city-suggestions">
-
                         </tbody>
                     </table>
                 </div>
             </div>
-
             <div class="d-flex gap60">
                 <div class="input-div d-flex width-100-per">
                     <span>Straße</span>
@@ -46,21 +42,23 @@
                         onfocusout="clearTable('street-suggestions','street-table')" placeholder="Straße">
                     <table id="street-table" class="tables d-none">
                         <tbody id="street-suggestions">
-
                         </tbody>
                     </table>
                 </div>
                 <div class="input-div  d-flex">
                     <span>Hausnummer</span>
-                    <input placeholder="Hausnummer">
+                    <input type="number" class="number-input" id="number-input" placeholder="Hausnummer"
+                        onkeydown="preventArrowKeyDefault(event)" onfocusout="inputsIntoCityJSON()">
                 </div>
             </div>
-
             <div class="input-div d-flex d-flex">
                 <span>Land</span>
-                <input class="width-100-per" placeholder="Land">
+                <input id="land-input" class="width-100-per" onfocusout="prefillLand()" placeholder="Land">
             </div>
-            <button onclick="getPostAdress()">Send</button>
+            <button onclick="showMessageBox()">Info</button>
+        </div>
+        <div id="message-box">
+
         </div>
 </body>
 
