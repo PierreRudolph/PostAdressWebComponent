@@ -53,6 +53,10 @@ body {
     font-size: 15px;
 }
 
+.fw-5 {
+    font-weight: 500;
+}
+
 .fw-6 {
     font-weight: 600;
 }
@@ -75,9 +79,12 @@ body {
 }
 
 .suggestion-td {
+    transition: all 225ms ease-out;
     cursor: pointer;
     font-weight: 500;
     font-size: 15px;
+    padding: 4px;
+    border-radius: 3px;
 }
 
 .suggestion-td:hover {
@@ -85,6 +92,7 @@ body {
 }
 
 .button {
+    cursor: pointer;
     width: 50px;
     margin-left: 72px;
 }

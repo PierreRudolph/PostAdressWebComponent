@@ -156,7 +156,7 @@ async function autoCompleteStreet() {
         removeDNone('street-table');
         streetSuggArray.forEach(city => {
             streetToString = "'" + city + "'";
-            streetSuggTable.innerHTML += /*html*/`<td class="suggestions-td" onclick="setInputValue(${streetToString},'street-input')">${city}</td>`;
+            streetSuggTable.innerHTML += /*html*/`<td class="suggestion-td" onclick="setInputValue(${streetToString},'street-input')">${city}</td>`;
         });
     }
     if (streetInput.value.length == 0) {
