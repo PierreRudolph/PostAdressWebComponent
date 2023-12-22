@@ -97,47 +97,34 @@ class PostAdressForm extends HTMLElement {
     connectedCallback() {
         this.shadowRoot.appendChild(adressFormTemplate.content.cloneNode(true));
         this.shadowRoot.getElementById('zip-code-input').onkeyup = () => this.autoCompleteZipCode();
-        //this.shadowRoot.getElementById('zip-code-input').onkeydown = () => this.preventArrowKeyDefault(this.shadowRoot.event);
-        //this.shadowRoot.getElementById('zip-code-input').onfocusout = () => this.autoFillCity(), this.clearTable('zip-code-suggestions', 'zip-code-table');
-
         this.shadowRoot.getElementById('city-input').onkeyup = () => this.autoCompleteCity();
-        this.shadowRoot.getElementById('city-input').onfocusout = () => { this.clearTable('city-suggestions', 'city-table') };
-
         this.shadowRoot.getElementById('street-input').onkeyup = () => this.autoCompleteStreet();
-        //this.shadowRoot.getElementById('street-input').onfocusout = () => { this.autoFillCity(); this.clearTable('street-suggestions', 'street-table') };
-
-        //this.shadowRoot.getElementById('number-input').onkeydown = () => this.preventArrowKeyDefault(this.shadowRoot.event);
-        //this.shadowRoot.getElementById('number-input').onfocusout = () => this.inputsIntoCityJSON();
-
-        //this.shadowRoot.getElementById('land-input').onfocusout = () => this.prefillLand();
-
         this.shadowRoot.getElementById('show-mes-btn').onclick = () => this.showMessageBox();
         this.prefillLand();
     }
 
     async getPostAdress(data) {
-        let preparedData = this.prepareJSON(data);
+        let noCorsUrl = 'https://cors-anywhere.herokuapp.com/https://www.postdirekt.de/plzserver/PlzAjaxServlet';
+        let normalUrl = 'https://www.postdirekt.de/plzserver/PlzAjaxServlet'
         try {
-            let noCorsUrl = 'https://cors-anywhere.herokuapp.com/https://www.postdirekt.de/plzserver/PlzAjaxServlet';
-            let normalUrl = 'https://www.postdirekt.de/plzserver/PlzAjaxServlet'
-            let response = await fetch(normalUrl, {
-                method: 'POST',
-                cache: 'no-cache',
-
-                headers: {
-                    'accept': 'application/json',
-                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-                },
-                body: preparedData,
-
-            })
+            let response = await fetch(normalUrl, this.getResponseContent(data))
             return response = await response.json();
-
         } catch (error) {
             console.log(error);
         }
     }
 
+    getResponseContent(data) {
+        let preparedData = this.prepareJSON(data);
+        let responseContent;
+        return responseContent = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            body: preparedData,
+        };
+    }
 
     prepareJSON(data) {
         let dataToString = JSON.stringify(data);
@@ -152,33 +139,27 @@ class PostAdressForm extends HTMLElement {
 
     async autoCompleteZipCode() {
         let zipCodeInput = this.getHTMLElement('zip-code-input');
-        let zipSuggDiv = this.getHTMLElement('zip-code-suggestions')
+        let zipTableBody = this.getHTMLElement('zip-code-suggestions')
         this.findaCity.city = zipCodeInput.value;
         let response = await this.getPostAdress(this.findaCity);
-        console.log(response)
         if (response.rows) {
-            console.log(response.rows[0]);
             this.foundCityIntoCityJSON(response.rows[0]);
-            if (response.rows.length > 5) {
-                response.rows.length = 5;
-            }
-            zipSuggDiv.innerHTML = '';
+            response.rows.length = this.setResponseRowsLength5(response);
+            zipTableBody.innerHTML = '';
             this.zipSuggArray = [];
-            for (let i = 0; i < response.rows.length; i++) {
-                const foundCity = response.rows[i];
-                if (!this.zipSuggArray.includes(foundCity.plz)) {
-                    this.zipSuggArray.push(foundCity.plz)
-                }
-            }
+            this.createSuggestionsArray(response, this.zipSuggArray, 'zip-code')
             this.removeDNone('zip-code-table');
-            this.zipSuggArray.forEach(zipCode => {
-                zipSuggDiv.innerHTML += /*html*/`<td class="suggestion-td" onclick="this.getRootNode().host.setInputValue(${zipCode},'zip-code-input')">${zipCode}</td>`;
-            });
+            this.tableInnerHTMl(this.zipSuggArray, zipTableBody, "'zip-code-input'");
         }
+        this.clearZipSuggIfInputEmpty(zipCodeInput, zipTableBody);
+    }
 
+
+
+    clearZipSuggIfInputEmpty(zipCodeInput, zipTableBody) {
         if (zipCodeInput.value.length == 0) {
             this.zipSuggArray = [];
-            zipSuggDiv.innerHTML = '';
+            zipTableBody.innerHTML = '';
             this.addDNone('zip-code-table');
         }
     }
@@ -186,32 +167,27 @@ class PostAdressForm extends HTMLElement {
 
     async autoCompleteCity() {
         let cityInput = this.getHTMLElement('city-input');
-        let citySuggTable = this.getHTMLElement('city-suggestions');
+        let cityTableBody = this.getHTMLElement('city-suggestions');
         this.findaZipCode.plz_city = cityInput.value;
         let response = await this.getPostAdress(this.findaZipCode);
         if (response.rows) {
             this.foundCityIntoCityJSON(response.rows[0])
             console.log(response.rows[0])
-            if (response.rows.length > 5) {
-                response.rows.length = 5;
-            }
-            citySuggTable.innerHTML = '';
+            response.rows.length = this.setResponseRowsLength5(response);
+            cityTableBody.innerHTML = '';
             this.citySuggArray = [];
-            for (let i = 0; i < response.rows.length; i++) {
-                const foundCity = response.rows[i];
-                if (!this.citySuggArray.includes(foundCity.city)) {
-                    this.citySuggArray.push(foundCity.city)
-                }
-            }
+            this.createSuggestionsArray(response, this.citySuggArray, 'city')
             this.removeDNone('city-table');
-            this.citySuggArray.forEach(city => {
-                let cityToString = "'" + city + "'";
-                citySuggTable.innerHTML += /*html*/`<td class="suggestion-td" onclick="this.getRootNode().host.setInputValue(${cityToString},'city-input')">${city}</td>`;
-            });
+            this.tableInnerHTMl(this.citySuggArray, cityTableBody, "'city-input'");
         }
+        this.clearCitySuggIfInputEmpty(cityInput, cityTableBody);
+    }
+
+
+    clearCitySuggIfInputEmpty(cityInput, cityTableBody) {
         if (cityInput.value.length == 0) {
             this.citySuggArray = [];
-            citySuggTable.innerHTML = '';
+            cityTableBody.innerHTML = '';
             this.addDNone('city-table');
         }
     }
@@ -219,40 +195,76 @@ class PostAdressForm extends HTMLElement {
 
     async autoCompleteStreet() {
         let streetInput = this.getHTMLElement('street-input');
-        let streetSuggTable = this.getHTMLElement('street-suggestions');
+        let streetTableBody = this.getHTMLElement('street-suggestions');
         this.findaZipCode.plz_city = this.cityJSON.city;
         this.findaZipCode.plz_plz = this.cityJSON.plz;
         this.findaZipCode.plz_street = streetInput.value;
-
         let response = await this.getPostAdress(this.findaZipCode);
-
         if (response.rows) {
             this.foundCityIntoCityJSON(response.rows[0])
-            if (response.rows.length > 5) {
-                response.rows.length = 5;
-            }
-            streetSuggTable.innerHTML = '';
+            response.rows.length = this.setResponseRowsLength5(response);
+            streetTableBody.innerHTML = '';
             this.streetSuggArray = [];
-            for (let i = 0; i < response.rows.length; i++) {
-                const foundCity = response.rows[i];
-
-                if (!this.streetSuggArray.includes(foundCity.street)) {
-
-                    this.streetSuggArray.push(foundCity.street)
-                }
-            }
+            this.createSuggestionsArray(response, this.streetSuggArray, 'street')
             this.removeDNone('street-table');
-            this.streetSuggArray.forEach(city => {
-                let streetToString = "'" + city + "'";
-                streetSuggTable.innerHTML += /*html*/`<td class="suggestion-td" onclick="this.getRootNode().host.setInputValue(${streetToString},'street-input')">${city}</td>`;
-            });
+            this.tableInnerHTMl(this.streetSuggArray, streetTableBody, "'street-input'");
         }
+        this.clearStreetSuggIfInputEmpty(streetInput, streetTableBody);
+    }
+
+
+    clearStreetSuggIfInputEmpty(streetInput, streetTableBody) {
         if (streetInput.value.length == 0) {
             this.streetSuggArray = [];
-            streetSuggTable.innerHTML = '';
+            streetTableBody.innerHTML = '';
             this.addDNone('street-table');
         }
     }
+
+
+    setResponseRowsLength5(response) {
+        if (response.rows.length > 5) {
+            return response.rows.length = 5;
+        } else {
+            return response.rows.length;
+        }
+    }
+
+
+    createSuggestionsArray(response, array, value) {
+        let arrayElement;
+        for (let i = 0; i < response.rows.length; i++) {
+            const foundCity = response.rows[i];
+            arrayElement = this.getArrayElement(value, foundCity)
+            if (!array.includes(arrayElement)) {
+                array.push(arrayElement)
+            }
+        }
+    }
+
+
+    getArrayElement(value, foundCity) {
+        let arrayElement;
+        if (value == 'zip-code') {
+            arrayElement = foundCity.plz;
+        }
+        if (value == 'city') {
+            arrayElement = foundCity.city;
+        }
+        if (value == 'street') {
+            arrayElement = foundCity.street;
+        }
+        return arrayElement;
+    }
+
+
+    tableInnerHTMl(array, tableBody, inputId) {
+        array.forEach(element => {
+            let elementToString = "'" + element + "'";
+            tableBody.innerHTML += /*html*/`<td class="suggestion-td" onclick="this.getRootNode().host.setInputValue(${elementToString},${inputId})">${element}</td>`;
+        });
+    }
+
 
 
     setInputValue(value, id) {
@@ -284,7 +296,6 @@ class PostAdressForm extends HTMLElement {
 
 
     autoFillCity() {
-        ;
         let cityInput = this.getHTMLElement('city-input');
         let zipCode = this.getHTMLElement('zip-code-input');
         if (this.cityJSON.city) {
@@ -294,22 +305,6 @@ class PostAdressForm extends HTMLElement {
             cityInput.value = '';
         }
     }
-
-
-    /**
-     * Funktioniert nicht weil große Städte mehr als eine Postleitzahl haben.
-     */
-    // autoFillZipCode() {
-    //     let cityInput = this.getHTMLElement('city-input')
-    //     let zipCode = this.getHTMLElement('zip-code-input');
-    //     if (this.cityJSON.plz) {
-    //         console.log(this.cityJSON.plz)
-    //         zipCode.value = this.cityJSON.plz;
-    //     }
-    //     if (cityInput.value.length == 0) {
-    //         zipCode.value = '';
-    //     }
-    // }
 
 
     prefillLand() {
@@ -341,7 +336,6 @@ class PostAdressForm extends HTMLElement {
 
 
     getHTMLElement(id) {
-
         let inputEl = this.shadowRoot.getElementById(`${id}`);
         return inputEl;
     }
@@ -364,7 +358,6 @@ class PostAdressForm extends HTMLElement {
             e.preventDefault();
         }
     }
-
 }
 
 customElements.define('post-adress-form', PostAdressForm);
