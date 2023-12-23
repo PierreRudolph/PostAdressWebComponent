@@ -1,10 +1,10 @@
-const adressFormTemplate = document.createElement('template');
-adressFormTemplate.innerHTML =/*html*/`
+const addressFormTemplate = document.createElement('template');
+addressFormTemplate.innerHTML =/*html*/`
 
-<link rel="stylesheet" href="adress-component/adress-comp.css">
+<link rel="stylesheet" href="address-component/address-comp.css">
 
 <div class="d-flex flex-column align-center pad-top50 gap-60">
-        <div class="adress-formular gap-10 d-flex flex-column">
+        <div class="address-formular gap-10 d-flex flex-column">
             <span class="fw-6 fs-15">Adresse</span>
             <div class="d-flex gap-60">
                 <div class="input-div align-center d-flex" style="padding-left: 31px;">
@@ -21,7 +21,7 @@ adressFormTemplate.innerHTML =/*html*/`
                     <span class="fw-5">Stadt</span>
                     <input class="width-100-per" id="city-input" placeholder="Stadt"
                     onfocusout="this.getRootNode().host.clearTable('city-suggestions','city-table')">
-                    <table id="city-table" class="tables d-none">
+                    <table id="city-table" class="tables d-none" style="left: 53px">
                         <tbody id="city-suggestions">
                         </tbody>
                     </table>
@@ -32,7 +32,7 @@ adressFormTemplate.innerHTML =/*html*/`
                     <span class="fw-5">Straße</span>
                     <input class="width-100-per" id="street-input" placeholder="Straße"
                     onfocusout="this.getRootNode().host.clearTable('street-suggestions','street-table')" placeholder="Straße">
-                    <table id="street-table" class="tables d-none">
+                    <table id="street-table" class="tables d-none" style="left:72px">
                         <tbody id="street-suggestions">
                         </tbody>
                     </table>
@@ -60,7 +60,7 @@ adressFormTemplate.innerHTML =/*html*/`
     </div>
 `;
 
-class PostAdressForm extends HTMLElement {
+class PostAddressForm extends HTMLElement {
     zipSuggArray = [];
     citySuggArray = [];
     streetSuggArray = [];
@@ -95,7 +95,7 @@ class PostAdressForm extends HTMLElement {
     }
 
     connectedCallback() {
-        this.shadowRoot.appendChild(adressFormTemplate.content.cloneNode(true));
+        this.shadowRoot.appendChild(addressFormTemplate.content.cloneNode(true));
         this.shadowRoot.getElementById('zip-code-input').onkeyup = () => this.autoCompleteZipCode();
         this.shadowRoot.getElementById('city-input').onkeyup = () => this.autoCompleteCity();
         this.shadowRoot.getElementById('street-input').onkeyup = () => this.autoCompleteStreet();
@@ -105,9 +105,9 @@ class PostAdressForm extends HTMLElement {
 
     async getPostAdress(data) {
         let noCorsUrl = 'https://cors-anywhere.herokuapp.com/https://www.postdirekt.de/plzserver/PlzAjaxServlet';
-        let normalUrl = 'https://www.postdirekt.de/plzserver/PlzAjaxServlet'
+        let normalUrl = 'https://www.postdirekt.de/plzserver/PlzAjaxServlet';
         try {
-            let response = await fetch(normalUrl, this.getResponseContent(data))
+            let response = await fetch(normalUrl, this.getResponseContent(data));
             return response = await response.json();
         } catch (error) {
             console.log(error);
@@ -139,7 +139,7 @@ class PostAdressForm extends HTMLElement {
 
     async autoCompleteZipCode() {
         let zipCodeInput = this.getHTMLElement('zip-code-input');
-        let zipTableBody = this.getHTMLElement('zip-code-suggestions')
+        let zipTableBody = this.getHTMLElement('zip-code-suggestions');
         this.findaCity.city = zipCodeInput.value;
         let response = await this.getPostAdress(this.findaCity);
         if (response.rows) {
@@ -147,7 +147,7 @@ class PostAdressForm extends HTMLElement {
             response.rows.length = this.setResponseRowsLength5(response);
             zipTableBody.innerHTML = '';
             this.zipSuggArray = [];
-            this.createSuggestionsArray(response, this.zipSuggArray, 'zip-code')
+            this.createSuggestionsArray(response, this.zipSuggArray, 'zip-code');
             this.removeDNone('zip-code-table');
             this.tableInnerHTMl(this.zipSuggArray, zipTableBody, "'zip-code-input'");
         }
@@ -172,11 +172,10 @@ class PostAdressForm extends HTMLElement {
         let response = await this.getPostAdress(this.findaZipCode);
         if (response.rows) {
             this.foundCityIntoCityJSON(response.rows[0])
-            console.log(response.rows[0])
             response.rows.length = this.setResponseRowsLength5(response);
             cityTableBody.innerHTML = '';
             this.citySuggArray = [];
-            this.createSuggestionsArray(response, this.citySuggArray, 'city')
+            this.createSuggestionsArray(response, this.citySuggArray, 'city');
             this.removeDNone('city-table');
             this.tableInnerHTMl(this.citySuggArray, cityTableBody, "'city-input'");
         }
@@ -205,7 +204,7 @@ class PostAdressForm extends HTMLElement {
             response.rows.length = this.setResponseRowsLength5(response);
             streetTableBody.innerHTML = '';
             this.streetSuggArray = [];
-            this.createSuggestionsArray(response, this.streetSuggArray, 'street')
+            this.createSuggestionsArray(response, this.streetSuggArray, 'street');
             this.removeDNone('street-table');
             this.tableInnerHTMl(this.streetSuggArray, streetTableBody, "'street-input'");
         }
@@ -235,9 +234,9 @@ class PostAdressForm extends HTMLElement {
         let arrayElement;
         for (let i = 0; i < response.rows.length; i++) {
             const foundCity = response.rows[i];
-            arrayElement = this.getArrayElement(value, foundCity)
+            arrayElement = this.getArrayElement(value, foundCity);
             if (!array.includes(arrayElement)) {
-                array.push(arrayElement)
+                array.push(arrayElement);
             }
         }
     }
@@ -291,7 +290,6 @@ class PostAdressForm extends HTMLElement {
         this.cityJSON.plz = zipCode.value;
         this.cityJSON.street = streetInput.value;
         this.cityJSON.number = numberInput.value;
-        console.log(this.cityJSON)
     }
 
 
@@ -360,4 +358,4 @@ class PostAdressForm extends HTMLElement {
     }
 }
 
-customElements.define('post-adress-form', PostAdressForm);
+customElements.define('post-address-form', PostAddressForm);
